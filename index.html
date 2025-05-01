@@ -350,17 +350,14 @@
                     }
                 };
 
-                let modoSeleccionado = '';
-
                 function seleccionarModo(modo) {
-                    modoSeleccionado = modo;
+                    modoCompra = modo;
+                    history.pushState({pagina: "productos"}, "", "#productos");
 
-                    // Mostrar productos y carrito
+                    document.querySelector('.pantalla-inicial').style.display = 'none';
                     document.getElementById('contenedor-productos').style.display = 'grid';
                     document.querySelector('.icono-carrito').style.display = 'block';
-
-                    // Ocultar pantalla de inicio
-                    document.querySelector('.pantalla-inicial').style.display = 'none';
+                    actualizarPrecios();
                 }
 
                 function actualizarPrecios() {
