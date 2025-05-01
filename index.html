@@ -289,27 +289,28 @@
             }
 
             /* Estilos del icono Instagram */
-            .instagram-fixed {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                z-index: 10000;
-                width: 35px;
-                height: 35px;
-                transition: all 0.3s;
-            }
+           .instagram-fixed {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10000;
+    width: 40px;
+    height: 40px;
+    transition: all 0.3s;
+    background: rgba(0, 0, 0, 0.7); /* Fondo oscuro para mejor contraste */
+    border-radius: 50%; /* Forma circular */
+    padding: 8px; /* Espacio interno */
+}
 
-            .instagram-logo {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
-            }
-
-            /* Ajuste de color para pantalla principal */
-            .pantalla-inicial .instagram-logo {
-                filter: brightness(0) invert(1);
-            }
+.instagram-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: 
+        drop-shadow(0 2px 3px rgba(0,0,0,0.3))
+        brightness(1.2) /* Mejora la luminosidad */
+        contrast(1.2); /* Aumenta el contraste */
+}
 
             @media (max-width: 768px) {
                 .contenedor-principal {
