@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>iDistribuyeCo </title>
+        <style>
+            /* MODIFICACIÓN 1: Ocultar productos inicialmente */
+            #contenedor-productos {
+                display: none;
+            }
+
+            /* MODIFICACIÓN 2: Ocultar carrito inicialmente */
+            .icono-carrito {
+                display: none;
+                /* Mantener resto de estilos */
+                position: fixed;
+                top: 1.5rem;
+                right: 1.5rem;
+                cursor: pointer;
+                z-index: 1001;
+                background: white;
+                padding: 0.8rem;
+                border-radius: 50%;
+                box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Helvetica Neue', sans-serif;
+            }
+
+            body {
+                background: #0000;
+            }
+
+            /* Pantalla de Bienvenida */
+            .pantalla-inicial {
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('img/fondo.png') center/cover;
+                color: white;
+                text-align: center;
+                padding: 2rem;
+            }
+
+            .logo-principal {
+                width: 220px;
+                margin-bottom: 2rem;
+                animation: flotar 3s ease-in-out infinite;
+                border-radius: 50px;
+
+            }
+
+            @keyframes flotar {
+                0%, 100% {
+                    transform: translateY(0);
+                }
+                50% {
+                    transform: translateY(-10px);
+                }
+            }
+
+            .botones-modales {
+                display: flex;
+                gap: 2rem;
+                margin-top: 3rem;
+            }
+
+            .boton-modal {
+                padding: 1.2rem 2.5rem;
+                font-size: 1.1rem;
+                border-radius: 30px;
+                border: none;
+                cursor: pointer;
+                transition: all 0.3s;
+                background: #ffffff;
+                color: #2c3e50;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            }
+
+            .boton-modal:hover {
+                transform: scale(1.05);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            }
+
+            /* Sección de Productos */
+            .contenedor-principal {
+                max-width: 1200px;
+                margin: 4rem auto;
+                padding: 0 1.5rem;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 2.5rem;
+            }
+
+            .tarjeta-producto {
+                background: white;
+                border-radius: 15px;
+                padding: 1.8rem;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+                transition: transform 0.3s;
+            }
+
+            .tarjeta-producto:hover {
+                transform: translateY(-5px);
+            }
+
+            .imagen-producto {
+                width: 100%;
+                height: 200px;
+                object-fit: contain;
+                margin-bottom: 1.5rem;
+            }
+
+            .nombre-producto {
+                color: #2c3e50;
+                font-size: 1.3rem;
+                margin-bottom: 1rem;
+                font-weight: 600;
+            }
+
+            .precio-producto {
+                color: #27ae60;
+                font-size: 1.4rem;
+                font-weight: 700;
+                margin: 1.2rem 0;
+            }
+
+            /* Controles de Cantidad */
+            .contador-cantidad {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 1.8rem 0;
+            }
+
+            .boton-cantidad {
+                width: 38px;
+                height: 38px;
+                border: none;
+                border-radius: 50%;
+                background: #3498db;
+                color: white;
+                font-size: 1.2rem;
+                cursor: pointer;
+                transition: background 0.3s;
+            }
+
+            .boton-cantidad:hover {
+                background: #2980b9;
+            }
+
+            .numero-cantidad {
+                margin: 0 1.5rem;
+                font-size: 1.3rem;
+                min-width: 30px;
+                text-align: center;
+            }
+
+            /* Botón Agregar */
+            .boton-agregar {
+                background: #e67e22;
+                color: white;
+                width: 100%;
+                padding: 0.8rem;
+                border: none;
+                border-radius: 8px;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .boton-agregar:hover {
+                background: #d35400;
+                transform: scale(0.98);
+            }
+
+            /* Carrito Flotante */
+            .carrito-contenedor {
+                position: fixed;
+                top: 2rem;
+                right: 2rem;
+                background: white;
+                padding: 1.5rem;
+                border-radius: 12px;
+                box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+                width: 350px;
+                z-index: 1000;
+                display: none;
+            }
+
+            .encabezado-carrito {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1.5rem;
+            }
+
+            .titulo-carrito {
+                font-size: 1.4rem;
+                color: #2c3e50;
+                font-weight: 600;
+            }
+
+            .total-carrito {
+                font-size: 1.3rem;
+                color: #27ae60;
+                font-weight: 700;
+                margin-top: 1.5rem;
+            }
+
+            .boton-comprar {
+                background: #27ae60;
+                width: 100%;
+                padding: 1rem;
+                margin-top: 1.5rem;
+            }
+
+            /* Ícono Carrito */
+            .icono-carrito {
+                position: fixed;
+                top: 1.5rem;
+                right: 1.5rem;
+                cursor: pointer;
+                z-index: 1001;
+                background: white;
+                padding: 0.8rem;
+                border-radius: 50%;
+                box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            }
+
+            .icono-carrito img {
+                width: 32px;
+                height: 32px;
+            }
+
+            .contador-productos {
+                position: absolute;
+                top: -5px;
+                right: -5px;
+                background: #e74c3c;
+                color: white;
+                border-radius: 50%;
+                padding: 0.2rem 0.6rem;
+                font-size: 0.8rem;
+                font-weight: 700;
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .contenedor-principal {
+                    grid-template-columns: 1fr;
+                }
+
+                .carrito-contenedor {
+                    width: 90%;
+                    right: 5%;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Pantalla Inicial -->
+        <section class="pantalla-inicial">
+            <img src="img/logo.png" alt="Logo iDistribuyeCo" class="logo-principal">
+            <h1 style="font-size: 2.2rem; margin-bottom: 1rem;">iDistribuyeCo</h1>
+            <p style="font-size: 1.1rem; margin-bottom: 2rem;">Distribuidor a todo Colombia</p>
+
+            <div class="botones-modales">
+                <button class="boton-modal" onclick="seleccionarModo('unidad')">Comprar por Unidad</button>
+                <button class="boton-modal" onclick="seleccionarModo('mayor')">Comprar al Por Mayor</button>
+            </div>
+        </section>
+
+        <!-- Icono Carrito -->
+        <div class="icono-carrito" onclick="toggleCarrito()">
+            <img src="img/carrito-icono.png" alt="Carrito">
+            <div class="contador-productos" id="contador-carrito">0</div>
+        </div>
+
+        <!-- Contenido Carrito -->
+        <div class="carrito-contenedor" id="carrito">
+            <div class="encabezado-carrito">
+                <h2 class="titulo-carrito">Tu Carrito</h2>
+                <span class="total-carrito">Total: $<span id="total">0</span></span>
+            </div>
+            <div id="lista-carrito" style="max-height: 50vh; overflow-y: auto;"></div>
+            <button class="boton-agregar boton-comprar" onclick="finalizarCompra()">Finalizar Compra</button>
+        </div>
+
+        <!-- Productos -->
+        <div class="contenedor-principal" id="contenedor-productos">
+            <!-- AirPods 2 Pro -->
+            <div class="tarjeta-producto">
+                <img src="img/airpods2pro.jpg" class="imagen-producto" alt="AirPods 2 Pro">
+                <h3 class="nombre-producto">AirPods 2 Pro</h3>
+                <p class="precio-producto" data-unidad="80000" data-mayor="70000">$80.000 COP</p>
+                <div class="contador-cantidad">
+                    <button class="boton-cantidad" onclick="actualizarCantidad('ap2', -1)">-</button>
+                    <span class="numero-cantidad" id="ap2">1</span>
+                    <button class="boton-cantidad" onclick="actualizarCantidad('ap2', 1)">+</button>
+                </div>
+                <button class="boton-agregar" onclick="agregarAlCarrito('AirPods 2 Pro', 'ap2')">Agregar al Carrito</button>
+            </div>
+
+            <!-- AirPods 3 -->
+            <div class="tarjeta-producto">
+                <img src="img/airpods3.jpg" class="imagen-producto" alt="AirPods 3">
+                <h3 class="nombre-producto">AirPods 3</h3>
+                <p class="precio-producto" data-unidad="60000" data-mayor="50000">$60.000 COP</p>
+                <div class="contador-cantidad">
+                    <button class="boton-cantidad" onclick="actualizarCantidad('ap3', -1)">-</button>
+                    <span class="numero-cantidad" id="ap3">1</span>
+                    <button class="boton-cantidad" onclick="actualizarCantidad('ap3', 1)">+</button>
+                </div>
+                <button class="boton-agregar" onclick="agregarAlCarrito('AirPods 3', 'ap3')">Agregar al Carrito</button>
+            </div>
+
+            <!-- AirPods Max -->
+            <div class="tarjeta-producto">
+                <img src="img/airpodsmax.jpg" class="imagen-producto" alt="AirPods Max">
+                <h3 class="nombre-producto">AirPods Max</h3>
+                <p class="precio-producto" data-unidad="130000" data-mayor="120000">$130.000 COP</p>
+                <div class="contador-cantidad">
+                    <button class="boton-cantidad" onclick="actualizarCantidad('apm', -1)">-</button>
+                    <span class="numero-cantidad" id="apm">1</span>
+                    <button class="boton-cantidad" onclick="actualizarCantidad('apm', 1)">+</button>
+                </div>
+                <button class="boton-agregar" onclick="agregarAlCarrito('AirPods Max', 'apm')">Agregar al Carrito</button>
+            </div>
+
+            <script>
+                let modoCompra = 'unidad';
+                let carrito = [];
+                const precios = {
+                    unidad: {
+                        'AirPods 2 Pro': 80000,
+                        'AirPods 3': 60000,
+                        'AirPods Max': 130000,
+                    },
+                    mayor: {
+                        'AirPods 2 Pro': 70000,
+                        'AirPods 3': 50000,
+                        'AirPods Max': 120000,
+                    }
+                };
+
+                let modoSeleccionado = '';
+
+                function seleccionarModo(modo) {
+                    modoSeleccionado = modo;
+
+                    // Mostrar productos y carrito
+                    document.getElementById('contenedor-productos').style.display = 'grid';
+                    document.querySelector('.icono-carrito').style.display = 'block';
+
+                    // Ocultar pantalla de inicio
+                    document.querySelector('.pantalla-inicial').style.display = 'none';
+                }
+
+                function actualizarPrecios() {
+                    document.querySelectorAll('.precio-producto').forEach(precio => {
+                        const producto = precio.parentElement.querySelector('.nombre-producto').textContent;
+                        precio.textContent = `$${precios[modoCompra][producto].toLocaleString()} COP`;
+                    });
+                }
+
+                function actualizarCantidad(id, cambio) {
+                    const cantidad = document.getElementById(id);
+                    let valor = parseInt(cantidad.textContent);
+                    valor = Math.max(1, valor + cambio);
+                    cantidad.textContent = valor;
+                }
+
+                function agregarAlCarrito(nombre, idCantidad) {
+                    const cantidad = parseInt(document.getElementById(idCantidad).textContent);
+                    const precioUnitario = precios[modoCompra][nombre];
+
+                    const itemExistente = carrito.find(item => item.nombre === nombre);
+                    if (itemExistente) {
+                        itemExistente.cantidad += cantidad;
+                        itemExistente.total = itemExistente.cantidad * precioUnitario;
+                    } else {
+                        carrito.push({
+                            nombre: nombre,
+                            cantidad: cantidad,
+                            precioUnitario: precioUnitario,
+                            total: cantidad * precioUnitario
+                        });
+                    }
+
+                    actualizarCarrito();
+                }
+
+                function actualizarCarrito() {
+                    const lista = document.getElementById('lista-carrito');
+                    const total = document.getElementById('total');
+                    const contador = document.getElementById('contador-carrito');
+
+                    lista.innerHTML = '';
+                    let totalCompra = 0;
+                    let totalItems = 0;
+
+                    carrito.forEach(item => {
+                        lista.innerHTML += `
+                            <div style="margin: 1rem 0; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                                <p style="font-weight: 600; color: #2c3e50;">${item.nombre}</p>
+                                <p style="margin: 0.5rem 0;">Cantidad: ${item.cantidad}</p>
+                                <p style="color: #27ae60; font-weight: 600;">Total: $${item.total.toLocaleString()}</p>
+                            </div>
+                        `;
+                        totalCompra += item.total;
+                        totalItems += item.cantidad;
+                    });
+
+                    total.textContent = totalCompra.toLocaleString();
+                    contador.textContent = totalItems;
+                    document.querySelector('.carrito-contenedor').style.display = 'block';
+                }
+
+                function toggleCarrito() {
+                    const carrito = document.getElementById('carrito');
+                    carrito.style.display = carrito.style.display === 'block' ? 'none' : 'block';
+                }
+
+                function finalizarCompra() {
+                    if (carrito.length === 0) {
+                        alert('🛒 Tu carrito está vacío');
+                        return;
+                    }
+
+                    const mensaje =
+                            "*📋 SOLICITUD DE PEDIDO - iDistribuyeCo*%0A%0A" +
+                            "*DATOS DEL COMPRADOR*%0A" +
+                            "▪️ Nombre: [Complete su nombre]%0A" +
+                            "▪️ Documento: [CC/NIT]%0A" +
+                            "▪️ Dirección: [Dirección completa]%0A%0A" +
+                            "*DETALLE DEL PEDIDO*%0A" +
+                            carrito.map(item =>
+                                    `▫️ *${item.nombre}*%0A` +
+                                        `   - Cantidad: ${item.cantidad} und%0A` +
+                                        `   - Precio unitario: $${item.precioUnitario.toLocaleString()} COP%0A` +
+                                        `   - Subtotal: $${item.total.toLocaleString()} COP`
+                            ).join('%0A%0A') + "%0A%0A" +
+                            "*RESUMEN DE COMPRA*%0A" +
+                            `• Total a pagar: $${document.getElementById('total').textContent} COP%0A` +
+                            `• Modalidad: ${modoCompra === 'unidad' ? 'Por Unidad' : 'Al Por Mayor'}%0A` +
+                            `${modoCompra === 'mayor' ? '• Mínimo por referencia: 5 unidades' : ''}%0A%0A` +
+                            "*CONDICIONES*%0A" +
+                            "✅ Productos nuevos y sellados%0A" +
+                            "💳 Pagos: Nequi, Daviplata, Bancolombia%0A" +
+                            "**Confirmar disponibilidad antes de pago*";
+
+                    window.open(`https://api.whatsapp.com/send?phone=573124553248&text=${mensaje}`, '_blank');
+                    carrito = [];
+                    actualizarCarrito();
+                }
+                window.addEventListener('popstate', function (event) {
+                    if (window.location.hash !== "#productos") {
+                        document.querySelector('.pantalla-inicial').style.display = 'flex';
+                        document.getElementById('contenedor-productos').style.display = 'none';
+                        document.querySelector('.icono-carrito').style.display = 'none';
+                        document.getElementById('carrito').style.display = 'none';
+                    }
+                });
+                window.onload = function () {
+                    if (window.location.hash === "#productos") {
+                        document.querySelector('.pantalla-inicial').style.display = 'none';
+                        document.getElementById('contenedor-productos').style.display = 'grid';
+                        document.querySelector('.icono-carrito').style.display = 'block';
+                    }
+                };
+
+            </script>
+    </body>
+</html>
+
