@@ -643,11 +643,10 @@
                         ).join('%0A%0A') + "%0A%0A" +
                         "*RESUMEN DE COMPRA*%0A" +
                         `• Total a pagar: $${document.getElementById('total').textContent} COP%0A` +
-                        `• Modalidad: ${modoCompra === 'unidad' ? 'Por Unidad' : 'Al Por Mayor'}%0A` +
-                        `${modoCompra === 'mayor' ? '• Mínimo por referencia: 5 unidades' : ''}%0A%0A` +
+                        `• Modalidad: ${modoCompra === 'unidad' ? 'Por Unidad' : 'Al Por Mayor'}%0A%0A` +
                         "*CONDICIONES*%0A" +
                         "✅ Productos nuevos y sellados%0A" +
-                        "💳 Pagos: Nequi, Daviplata, Bancolombia%0A" +
+                        "💳 Pagos: Nequi, Daviplata, Bancolombia%0A%0A" +
                         "**Confirmar disponibilidad antes de pago*";
 
                 window.open(`https://api.whatsapp.com/send?phone=573124553248&text=${mensaje}`, '_blank');
