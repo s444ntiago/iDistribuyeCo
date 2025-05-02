@@ -50,7 +50,7 @@
                     transform: translateY(-10px);
                 }
             }
-            
+
             .titulo-seccion {
                 position: fixed;
                 top: 0;
@@ -223,6 +223,7 @@
                 margin-top: 1.5rem;
             }
 
+
             /* Ícono Carrito */
             .icono-carrito {
                 display: flex;
@@ -287,6 +288,60 @@
                 padding: 1rem;
                 border-bottom: 1px solid #eee;
             }
+            /* Notificación de producto agregado */
+            .notificacion-agregado {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #27ae60;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                display: none;
+                align-items: center;
+                gap: 10px;
+                animation: slideIn 0.3s ease-out;
+                z-index: 9999;
+            }
+
+            @keyframes slideIn {
+                from {
+                    bottom: -50px;
+                    opacity: 0;
+                }
+                to {
+                    bottom: 20px;
+                    opacity: 1;
+                }
+            }
+
+            .notificacion-agregado.mostrar {
+                display: flex;
+            }
+
+            /* Notificación de error */
+            .notificacion-error {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #e74c3c;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                display: none;
+                align-items: center;
+                gap: 10px;
+                animation: slideIn 0.3s ease-out;
+                z-index: 9999;
+            }
+
+            .notificacion-error.mostrar {
+                display: flex;
+            }
 
             /* Estilos del icono Instagram */
             .instagram-fixed {
@@ -338,12 +393,25 @@
                 <button class="boton-modal" onclick="seleccionarModo('mayor')">Comprar al Por Mayor</button>
             </div>
         </section>
+        <div class="notificacion-agregado" id="notificacion-agregado">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+            <span id="mensaje-notificacion"></span>
+        </div>
 
         <!-- Icono Instagram -->
         <div class="instagram-fixed">
             <a href="https://instagram.com/idistribuyeco" target="_blank">
                 <img src="img/instagram-icon.png" alt="Instagram" class="instagram-logo">
             </a>
+        </div>
+        <!-- Notificación de error -->
+        <div class="notificacion-error" id="notificacion-error">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+            <span id="mensaje-error"></span>
         </div>
 
     </section>
@@ -424,7 +492,7 @@
             function seleccionarModo(modo) {
                 modoCompra = modo;
                 const titulo = document.getElementById('titulo-seccion');
-                const tituloTexto = modo === 'unidad' ? 'COMPRA POR UNIDAD' : 'COMPRA AL POR MAYOR';
+                const tituloTexto = modo === 'unidad' ? 'PRECIOS POR UNIDAD' : 'PRECIOS AL POR MAYOR';
 
                 history.pushState({pagina: "productos"}, "", "#productos");
 
@@ -455,8 +523,17 @@
 
             function agregarAlCarrito(nombre, idCantidad) {
                 const cantidad = parseInt(document.getElementById(idCantidad).textContent);
+
+                // Mostrar error si no hay productos seleccionados
                 if (cantidad === 0) {
-                    alert("¡La cantidad no puede ser 0!");
+                    const notificacionError = document.getElementById('notificacion-error');
+                    const mensajeError = document.getElementById('mensaje-error');
+                    mensajeError.textContent = "¡No has seleccionado ningún producto!";
+
+                    notificacionError.classList.add('mostrar');
+                    setTimeout(() => {
+                        notificacionError.classList.remove('mostrar');
+                    }, 1000);
                     return;
                 }
 
@@ -464,8 +541,8 @@
                 const itemIndex = carrito.findIndex(item => item.nombre === nombre);
 
                 if (itemIndex !== -1) {
-                    carrito[itemIndex].cantidad = cantidad;
-                    carrito[itemIndex].total = cantidad * precioUnitario;
+                    carrito[itemIndex].cantidad += cantidad;
+                    carrito[itemIndex].total = carrito[itemIndex].cantidad * precioUnitario;
                 } else {
                     carrito.push({
                         nombre: nombre,
@@ -474,6 +551,16 @@
                         total: cantidad * precioUnitario
                     });
                 }
+
+                // Mostrar notificación de éxito
+                const notificacion = document.getElementById('notificacion-agregado');
+                const mensaje = document.getElementById('mensaje-notificacion');
+                mensaje.textContent = `${cantidad} ${nombre} agregado(s) al carrito`;
+
+                notificacion.classList.add('mostrar');
+                setTimeout(() => {
+                    notificacion.classList.remove('mostrar');
+                }, 3000);
 
                 document.getElementById(idCantidad).textContent = 0;
                 actualizarCarrito();
@@ -518,10 +605,16 @@
                 carrito.style.display = carrito.style.display === 'block' ? 'none' : 'block';
             }
 
-            // Modificar la función finalizarCompra
+            // Función finalizarCompra
             function finalizarCompra() {
+                const notificacionError = document.getElementById('notificacion-error');
+                const mensajeError = document.getElementById('mensaje-error');
+
+                // Notificación carrito vacío
                 if (carrito.length === 0) {
-                    alert('🛒 Tu carrito está vacío');
+                    mensajeError.textContent = '🛒 Tu carrito está vacío';
+                    notificacionError.classList.add('mostrar');
+                    setTimeout(() => notificacionError.classList.remove('mostrar'), 1000);
                     return;
                 }
 
@@ -529,7 +622,9 @@
                 if (modoCompra === 'mayor') {
                     const totalUnidades = carrito.reduce((total, item) => total + item.cantidad, 0);
                     if (totalUnidades < 5) {
-                        alert('🚫 Compra mínima de 5 unidades requerida para ventas al por mayor');
+                        mensajeError.textContent = '🚫 Compra mínima de 5 unidades para ventas al por mayor';
+                        notificacionError.classList.add('mostrar');
+                        setTimeout(() => notificacionError.classList.remove('mostrar'), 1000);
                         return;
                     }
                 }
@@ -564,6 +659,7 @@
             window.addEventListener('popstate', function (event) {
                 const titulo = document.getElementById('titulo-seccion');
                 const iconoCarrito = document.querySelector('.icono-carrito');
+                const carrito = document.getElementById('carrito'); // Añade esta línea
 
                 if (window.location.hash === "#productos") {
                     document.querySelector('.pantalla-inicial').style.display = 'none';
@@ -575,12 +671,12 @@
                     document.getElementById('contenedor-productos').style.display = 'none';
                     iconoCarrito.style.display = 'none';
                     titulo.style.display = 'none';
+                    carrito.style.display = 'none'; // Oculta el carrito
                     // Limpiar carrito al volver a inicio
                     carrito = [];
                     actualizarCarrito();
                 }
             });
-
             // Modificar el window.onload
             window.onload = function () {
                 const iconoCarrito = document.querySelector('.icono-carrito');
