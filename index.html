@@ -555,8 +555,7 @@
                 // Mostrar notificación de éxito
                 const notificacion = document.getElementById('notificacion-agregado');
                 const mensaje = document.getElementById('mensaje-notificacion');
-                mensaje.textContent = `${cantidad} ${nombre} agregado(s) al carrito`;
-
+                mensaje.textContent = `${cantidad} ${nombre} ${cantidad > 1 ? 'agregados' : 'agregado'} al carrito`;
                 notificacion.classList.add('mostrar');
                 setTimeout(() => {
                     notificacion.classList.remove('mostrar');
